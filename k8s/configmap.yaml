@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lcm-config
+  labels:
+    app: lcm
+data:
+  config.yaml: |-
+    type: yml
+    app:
+      startServer: true # Run as a web server, default is false
+
+    # By default, all namespaces are checked. You can provide a list of namespaces to check instead.
+    namespaces:
+      - default
+
+    # By default DockerHub, Quay, gcr.io, k8s.gcr.io, and Zalando repository are configured
+    # If your images are using one of these registries the version fetching will work automatically
+    imageRegistries:
+      dockerHub:
+        default: true
+      overrideImageNames:
+        grafana: grafana/grafana
+        prometheus: prom/prometheus
+        alertmanager: prom/alertmanager
+        pushgateway: prom/pushgateway
+        configmap-reload: jimmidyson/configmap-reload
+        prometheus-msteams: prometheusmsteams/prometheus-msteams
+      override:
+        - registryName: Quay
+          images:
+            - prometheus-msteams
+          allowAllReleases: true
+
+    # You can specify static tools/applications for which you want to find the latest versions on GitHub
+    # Looking up latest version on GitHub works out of the box but you can add your username/password or token
+    # if you are hitting GitHub limits or want to access private repositories
+    # Use username/password which is an older way or use a GitHub token which is preferred
+    github:
+      repos:
+        - repo: Azure/application-gateway-kubernetes-ingress
+          version: "1.2.1"
+        - repo: Azure/secrets-store-csi-driver-provider-azure
+          version: "0.0.8"
+        - repo: hashicorp/terraform
+          version: "v0.12.26"
+        - repo: terraform-providers/terraform-provider-azurerm
+          version: "v2.28.0"
+        - repo: helm/helm
+          version: "v3.2.2"
+        - repo: kubernetes/kubernetes
+          version: "v1.17.9"
